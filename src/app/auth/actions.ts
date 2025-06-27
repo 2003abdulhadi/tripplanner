@@ -43,7 +43,7 @@ export async function signup(formData: FormData) {
   }
 
   const {
-    data: { user, session },
+    data: { user },
     error,
   } = await supabase.auth.signUp(data);
 

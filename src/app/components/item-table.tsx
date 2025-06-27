@@ -2,7 +2,7 @@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { DataTable } from "@/components/ui/data-table";
 import { ItemRow, ProviderRow } from "@/lib/types";
-import { getProviderColumns, itemColumns, providerColumns } from "./columns";
+import { getProviderColumns, itemColumns } from "./columns";
 import { Fragment } from "react";
 import ProvideItemButton from "./add-provider";
 
@@ -29,7 +29,7 @@ export function ItemTable({
 
       {itemCategories.map(({ slug }) => (
         <TabsContent value={slug} key={slug}>
-          <DataTable<ItemRow, any>
+          <DataTable<ItemRow, unknown>
             columns={itemColumns}
             data={items.filter((i) => i.itemCategorySlug === slug)}
             renderSubRow={(item) => {
@@ -47,7 +47,7 @@ export function ItemTable({
               }
               return (
                 <Fragment>
-                  <DataTable<ProviderRow, any>
+                  <DataTable<ProviderRow, unknown>
                     columns={getProviderColumns(currentUser)}
                     data={item.Provider}
                   />

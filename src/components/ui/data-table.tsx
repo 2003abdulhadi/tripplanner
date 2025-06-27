@@ -15,7 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useState } from "react";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];

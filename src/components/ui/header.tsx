@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Button } from "./button";
 import { redirect } from "next/navigation";
 
-async function signOutAction(formData: FormData) {
+async function signOutAction() {
   "use server";
   const supabase = await createClient();
   await supabase.auth.signOut();
@@ -14,7 +14,6 @@ export default async function Header() {
   const supabase = await createClient();
   const {
     data: { user },
-    error,
   } = await supabase.auth.getUser();
 
   return (

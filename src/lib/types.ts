@@ -1,5 +1,3 @@
-import type { Provider, User } from "@prisma/client";
-
 export type ProviderRow = {
   userId: string;
   userName: string;

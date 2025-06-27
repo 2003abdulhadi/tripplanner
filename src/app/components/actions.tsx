@@ -11,7 +11,6 @@ export async function createItem(formData: FormData) {
   // authenticate user
   const {
     data: { user },
-    error,
   } = await supabase.auth.getUser();
 
   if (!user) {
