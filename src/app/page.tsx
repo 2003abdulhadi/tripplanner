@@ -37,7 +37,7 @@ export default async function HomePage() {
       <div className="relative flex-auto flex">
         <ItemTable
           itemCategories={itemCategories}
-          items={[...items, ...items, ...items]}
+          items={[...items]}
           currentUser={user?.id}
         />
 
