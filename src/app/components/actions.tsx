@@ -1,5 +1,6 @@
 "use server";
 
+import prisma from "@/utils/prisma/prisma";
 import { createClient } from "@/utils/supabase/server";
 import { Item } from "@prisma/client";
 import { revalidatePath } from "next/cache";
