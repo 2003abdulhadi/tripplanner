@@ -1,5 +1,6 @@
 "use server";
 
+import prisma from "@/utils/prisma/prisma";
 import { createClient } from "@/utils/supabase/server";
 import { Item } from "@prisma/client";
 import { revalidatePath } from "next/cache";
@@ -33,7 +34,7 @@ export async function createItem(formData: FormData) {
   }
 
   // check for duplicates
-  if (await prisma?.item.findFirst({ where: { name: data.name } })) {
+  if (await prisma.item.findFirst({ where: { name: data.name } })) {
     redirect("/");
   }
 
@@ -70,7 +71,7 @@ export async function addProvider(formData: FormData) {
   }
 
   // 3) insert into Prisma
-  await prisma?.provider.create({
+  await prisma.provider.create({
     data: {
       itemName,
       userId: user.id,
@@ -89,7 +90,7 @@ export async function updateProvider(formData: FormData) {
   const quantity = Number(formData.get("quantity"));
   const description = formData.get("description") as string | undefined;
 
-  await prisma?.provider.update({
+  await prisma.provider.update({
     where: { userId_itemName: { userId, itemName } },
     data: { quantity, description },
   });
@@ -102,7 +103,7 @@ export async function deleteProvider(formData: FormData) {
   const userId = formData.get("userId") as string;
   const itemName = formData.get("itemName") as string;
 
-  await prisma?.provider.delete({
+  await prisma.provider.delete({
     where: { userId_itemName: { userId, itemName } },
   });
 
