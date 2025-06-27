@@ -19,9 +19,13 @@ export function ItemTable({
 }: ItemTableProps) {
   return (
     <Tabs defaultValue={itemCategories[0].slug} className="flex-auto">
-      <TabsList>
+      <TabsList className="overflow-x-auto table">
         {itemCategories.map(({ slug, label }) => (
-          <TabsTrigger value={slug} key={slug}>
+          <TabsTrigger
+            value={slug}
+            key={slug}
+            className="whitespace-normal break-normal flex-none"
+          >
             {label}
           </TabsTrigger>
         ))}
