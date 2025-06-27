@@ -52,7 +52,7 @@ export default async function HomePage() {
 
   return (
     <div className="flex-auto px-4 flex">
-      <div className="relative flex-auto">
+      <div className="relative flex-auto flex">
         <ItemTable
           itemCategories={itemCategories}
           items={items}
