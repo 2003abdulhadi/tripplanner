@@ -41,11 +41,7 @@ export function ItemTable({
                 return (
                   <Fragment>
                     <em>No providers yet.</em>
-                    {currentUser ? (
-                      <ProvideItemButton itemName={item.name} />
-                    ) : (
-                      <></>
-                    )}
+                    {currentUser && <ProvideItemButton itemName={item.name} />}
                   </Fragment>
                 );
               }
@@ -55,11 +51,7 @@ export function ItemTable({
                     columns={getProviderColumns(currentUser)}
                     data={item.Provider}
                   />
-                  {currentUser ? (
-                    <ProvideItemButton itemName={item.name} />
-                  ) : (
-                    <></>
-                  )}
+                  {currentUser && <ProvideItemButton itemName={item.name} />}
                 </Fragment>
               );
             }}

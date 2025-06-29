@@ -13,3 +13,8 @@ export type ItemRow = {
   itemCategorySlug?: string;
   Provider: ProviderRow[];
 };
+
+export type FormResult<E = string | null> = {
+  success: boolean;
+  error: E;
+};

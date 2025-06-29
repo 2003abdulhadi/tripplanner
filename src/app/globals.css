@@ -116,7 +116,23 @@
   * {
     @apply border-border outline-ring/50;
     /* outline: 1px dashed yellowgreen; */
+    scrollbar-gutter: stable;
+    ::-webkit-scrollbar {
+      background: transparent;
+      width: 7px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background-color: rgba(0, 0, 0, 0.4);
+      border-radius: 10rem;
+      border: 1px solid #fff;
+    }
 
+    ::-webkit-scrollbar-track-piece,
+    ::-webkit-scrollbar-track-piece:start,
+    ::-webkit-scrollbar-track-piece:end,
+    ::-webkit-scrollbar-track-piece {
+      background: transparent;
+    }
   }
   body {
     @apply bg-background text-foreground;
