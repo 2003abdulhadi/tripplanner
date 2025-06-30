@@ -16,7 +16,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { AddItemButtonProps } from "./add-item";
 
-function AddItemForm({ itemCategories }: AddItemButtonProps) {
+function AddItemForm({ itemCategories, onSuccess }: AddItemButtonProps & { onSuccess?: () => void }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -31,6 +31,7 @@ function AddItemForm({ itemCategories }: AddItemButtonProps) {
     try {
       const { success, error } = await addItem(formData);
       if (success) {
+        if (onSuccess) onSuccess();
         router.push("/");
       } else {
         setError(error as string);
