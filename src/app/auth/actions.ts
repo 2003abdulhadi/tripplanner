@@ -24,6 +24,7 @@ export async function signin(formData: FormData): Promise<AuthResult> {
   const { error } = await supabase.auth.signInWithPassword(data);
 
   if (error) {
+    console.error(error);
     return { success: false, error: String(error.code) };
   }
 
@@ -53,6 +54,7 @@ export async function signup(formData: FormData): Promise<AuthResult> {
   } = await supabase.auth.signUp(data);
 
   if (error) {
+    console.error(error);
     return { success: false, error: String(error.code) };
   }
 
@@ -66,6 +68,7 @@ export async function signup(formData: FormData): Promise<AuthResult> {
       },
     });
   } catch (error) {
+    console.error("Error creating user:", error);
     return { success: false, error: "database_error" };
   }
 

@@ -62,6 +62,7 @@ export async function addItem(formData: FormData): Promise<ItemResult> {
       data: payload,
     });
   } catch (error) {
+    console.error("Error creating item:", error);
     return {
       success: false,
       error: "database_error",
@@ -216,6 +217,7 @@ export async function updateProvider(formData: FormData) {
       update: payload,
     });
   } catch (error) {
+    console.error("Error updating provider:", error);
     return {
       success: false,
       error: "database_error",
@@ -247,14 +249,6 @@ export async function deleteProvider(formData: FormData) {
     itemName: formData.get("itemName") as string,
     quantity: Number(formData.get("quantity")),
     description: (formData.get("description") as string) ?? "",
-  };
-
-  // create item
-  const payload: Provider = {
-    userId: user.id,
-    itemName: data.itemName,
-    quantity: +data.quantity,
-    description: data.description,
   };
 
   try {
