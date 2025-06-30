@@ -11,7 +11,7 @@ export default async function HomePage() {
   } = await supabase.auth.getUser();
 
   const itemCategories = await prisma.itemCategory.findMany({
-    select: { slug: true, label: true },
+    select: { slug: true, label: true, description: true },
   });
 
   const rawItems = await prisma.item.findMany({
@@ -40,8 +40,7 @@ export default async function HomePage() {
           items={[...items]}
           currentUser={user?.id}
         />
-
-        {user ? <AddItemButton categories={itemCategories} /> : <></>}
+        {user && <AddItemButton itemCategories={[...itemCategories]} />}
       </div>
     </div>
   );

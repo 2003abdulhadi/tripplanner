@@ -19,7 +19,9 @@ export default async function Header() {
   return (
     <div className="flex items-center p-4 gap-2">
       <h1 className="font-black tracking-wide text-2xl grow">
-        Trip Planner - Carleton (and extras) Cottage 2025
+        <Link href={"/"}>
+          Trip Planner - Carleton (and extras) Cottage 2025
+        </Link>
       </h1>
       {user ? (
         <form action={signOutAction}>

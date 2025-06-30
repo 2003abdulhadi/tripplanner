@@ -1,12 +1,16 @@
 "use server";
 
+import { FormResult } from "@/lib/types";
 import prisma from "@/utils/prisma/prisma";
 import { createClient } from "@/utils/supabase/server";
-import { Item } from "@prisma/client";
+import { Item, Provider } from "@prisma/client";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
-export async function createItem(formData: FormData) {
+type ItemError = "missing_data" | "item_already_exists" | "database_error";
+
+type ItemResult = FormResult<ItemError | string | null>;
+
+export async function addItem(formData: FormData): Promise<ItemResult> {
   const supabase = await createClient();
 
   // authenticate user
@@ -15,7 +19,10 @@ export async function createItem(formData: FormData) {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect(`/error`);
+    return {
+      success: false,
+      error: "user_not_authenticated",
+    };
   }
 
   // parse form
@@ -26,16 +33,20 @@ export async function createItem(formData: FormData) {
     note: formData.get("note") as string,
   };
 
-  console.log(data);
-
   // validate contents
   if (!data.name || !data.needed || !data.itemCategorySlug) {
-    redirect(`/error`);
+    return {
+      success: false,
+      error: "missing_data",
+    };
   }
 
   // check for duplicates
   if (await prisma.item.findFirst({ where: { name: data.name } })) {
-    redirect("/");
+    return {
+      success: false,
+      error: "item_already_exists",
+    };
   }
 
   // create item
@@ -46,66 +57,218 @@ export async function createItem(formData: FormData) {
     note: data.note ?? null,
   };
 
-  await prisma?.item.create({
-    data: payload,
-  });
-
-  revalidatePath("/", "layout");
-  redirect("/");
-}
-
-export async function addProvider(formData: FormData) {
-  // 1) pull the fields out
-  const itemName = formData.get("itemName") as string;
-  const quantity = Number(formData.get("quantity"));
-  const description = formData.get("description") as string | undefined;
-
-  // 2) get the current user
-  const supabase = await createClient();
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
-  if (error || !user) {
-    throw new Error("You must be signed in to add a provider");
+  try {
+    await prisma.item.create({
+      data: payload,
+    });
+  } catch (error) {
+    console.error("Error creating item:", error);
+    return {
+      success: false,
+      error: "database_error",
+    };
   }
 
-  // 3) insert into Prisma
-  await prisma.provider.create({
-    data: {
-      itemName,
-      userId: user.id,
-      quantity,
-      description,
-    },
-  });
+  revalidatePath("/", "layout");
+  return { success: true, error: null };
+}
 
-  // 4) optionally, re-validate/cache or redirect
-  redirect("/"); // or wherever makes sense
+export async function addProvider(formData: FormData): Promise<FormResult> {
+  const supabase = await createClient();
+
+  // authenticate user
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return {
+      success: false,
+      error: "user_not_authenticated",
+    };
+  }
+
+  // parse form
+  const data = {
+    itemName: formData.get("itemName") as string,
+    quantity: formData.get("quantity") as string,
+    description: (formData.get("description") as string) ?? "",
+  };
+
+  // validate contents
+  if (!data.itemName || !data.quantity) {
+    return {
+      success: false,
+      error: "missing_data",
+    };
+  }
+
+  // check for duplicates
+  if (
+    await prisma.provider.findFirst({
+      where: {
+        itemName: data.itemName,
+        userId: user.id,
+        description: data.description,
+      },
+    })
+  ) {
+    return {
+      success: false,
+      error: "item_already_exists",
+    };
+  }
+
+  // create item
+  const payload: Provider = {
+    userId: user.id,
+    itemName: data.itemName,
+    quantity: +data.quantity,
+    description: data.description,
+  };
+
+  try {
+    await prisma.provider.create({
+      data: payload,
+    });
+  } catch (error) {
+    console.error("Error creating provider:", error);
+    return {
+      success: false,
+      error: "database_error",
+    };
+  }
+
+  revalidatePath("/", "layout");
+  return { success: true, error: null };
 }
 
 export async function updateProvider(formData: FormData) {
-  const userId = formData.get("userId") as string;
-  const itemName = formData.get("itemName") as string;
-  const quantity = Number(formData.get("quantity"));
-  const description = formData.get("description") as string | undefined;
+  const supabase = await createClient();
 
-  await prisma.provider.update({
-    where: { userId_itemName: { userId, itemName } },
-    data: { quantity, description },
-  });
+  // authenticate user
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  // re-render this page’s data:
-  revalidatePath("/");
+  if (!user) {
+    return {
+      success: false,
+      error: "user_not_authenticated",
+    };
+  }
+
+  // parse form
+  const data = {
+    userId: formData.get("userId") as string,
+    itemName: formData.get("itemName") as string,
+    currentQuantity: Number(formData.get("currentQuantity")),
+    currentDescription: (formData.get("currentDescription") as string) ?? "",
+    newQuantity: Number(formData.get("newQuantity")),
+    newDescription: (formData.get("newDescription") as string) ?? "",
+  };
+
+  console.log("Update Provider Data:", data);
+
+  // validate contents
+  if (!data.newQuantity) {
+    return {
+      success: false,
+      error: "missing_data",
+    };
+  }
+
+  // check for duplicates if we are changing description
+  if (data.newDescription !== data.currentDescription) {
+    if (
+      await prisma.provider.findFirst({
+        where: {
+          itemName: data.itemName,
+          userId: user.id,
+          description: data.newDescription,
+        },
+      })
+    ) {
+      return {
+        success: false,
+        error: "item_already_exists",
+      };
+    }
+  }
+
+  // create item
+  const payload: Provider = {
+    userId: user.id,
+    itemName: data.itemName,
+    quantity: +data.newQuantity,
+    description: data.newDescription,
+  };
+
+  try {
+    await prisma.provider.upsert({
+      where: {
+        userId_itemName_description: {
+          userId: user.id,
+          itemName: data.itemName,
+          description: data.currentDescription,
+        },
+      },
+      create: payload,
+      update: payload,
+    });
+  } catch (error) {
+    console.error("Error updating provider:", error);
+    return {
+      success: false,
+      error: "database_error",
+    };
+  }
+
+  revalidatePath("/", "layout");
+  return { success: true, error: null };
 }
 
 export async function deleteProvider(formData: FormData) {
-  const userId = formData.get("userId") as string;
-  const itemName = formData.get("itemName") as string;
+  const supabase = await createClient();
 
-  await prisma.provider.delete({
-    where: { userId_itemName: { userId, itemName } },
-  });
+  // authenticate user
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  revalidatePath("/");
+  if (!user) {
+    return {
+      success: false,
+      error: "user_not_authenticated",
+    };
+  }
+
+  // parse form
+  const data = {
+    userId: formData.get("userId") as string,
+    itemName: formData.get("itemName") as string,
+    quantity: Number(formData.get("quantity")),
+    description: (formData.get("description") as string) ?? "",
+  };
+
+  try {
+    await prisma.provider.delete({
+      where: {
+        userId_itemName_description: {
+          userId: user.id,
+          itemName: data.itemName,
+          description: data.description,
+        },
+      },
+    });
+  } catch (error) {
+    console.log("Error deleting provider:", error);
+    return {
+      success: false,
+      error: "database_error",
+    };
+  }
+
+  revalidatePath("/", "layout");
+  return { success: true, error: null };
 }

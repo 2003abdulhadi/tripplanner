@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -7,19 +8,18 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { addProvider } from "./actions";
+import AddProviderForm from "./add-provider-form";
 
-interface ProvideItemButtonProps {
+export interface ProvideItemButtonProps {
   itemName: string;
 }
 
 export default function ProvideItemButton({
   itemName,
 }: ProvideItemButtonProps) {
+  const [open, setOpen] = useState(false);
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
           className="absolute top-0 right-0 z-10 rounded-full p-2.5 shadow-lg w-0 h-0 font-black"
@@ -30,32 +30,14 @@ export default function ProvideItemButton({
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Add New Item</DialogTitle>
+          <DialogTitle>Provide {itemName}</DialogTitle>
           <DialogDescription>
-            Create a new item to add to the list
+            Let everyone know that you&apos;re bringing {itemName} to this trip
           </DialogDescription>
-          <form action={addProvider} className="flex flex-col gap-4">
-            <input type="hidden" name="itemName" value={itemName} />
-            <div className="flex flex-col">
-              <Label htmlFor="quantity">Quantity</Label>
-              <Input
-                id="quantity"
-                name="quantity"
-                type="number"
-                min={1}
-                defaultValue={1}
-                required
-              />
-            </div>
-            <div className="flex flex-col">
-              <Label htmlFor="description">Notes (optional)</Label>
-              <Input id="description" name="description" type="text" />
-            </div>
-
-            <Button type="submit" className="self-end">
-              Add Me
-            </Button>
-          </form>
+          <AddProviderForm
+            itemName={itemName}
+            onSuccess={() => setOpen(false)}
+          />
         </DialogHeader>
       </DialogContent>
     </Dialog>

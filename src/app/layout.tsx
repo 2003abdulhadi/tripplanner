@@ -4,6 +4,7 @@ import { ThemeProvider } from "next-themes";
 import Header from "@/components/ui/header";
 import Footer from "@/components/ui/footer";
 import "./globals.css";
+import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,13 +29,14 @@ export default function RootLayout({
   return (
     // https://www.npmjs.com/package/next-themes
     <html lang="en" suppressHydrationWarning>
-      <body>
+      <body style={{ overflow: "auto" }}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <div
             className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col h-dvh bg-background text-foreground transition transition ease-in-out duration-500`}
           >
             <Header />
             {children}
+            <Toaster />
             <Footer />
           </div>
         </ThemeProvider>

@@ -2,7 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { ItemRow, ProviderRow } from "@/lib/types";
-import { EditProviderDialog } from "./edit-provider";
+import { EditProviderDialog } from "./edit-provider-dialog";
 
 export const itemColumns: ColumnDef<ItemRow>[] = [
   {
@@ -25,9 +25,17 @@ export const itemColumns: ColumnDef<ItemRow>[] = [
     header: "Needed",
   },
   {
-    id: "providerCount",
-    header: "Count",
-    accessorFn: (row) => row.Provider?.length ?? 0,
+    id: "providerQuantitySum",
+    header: "Provided",
+    accessorFn: (row) =>
+      Array.isArray(row.Provider)
+        ? row.Provider.reduce(
+            (sum, provider) =>
+              sum +
+              (typeof provider.quantity === "number" ? provider.quantity : 0),
+            0
+          )
+        : 0,
   },
 ];
 
@@ -66,14 +74,12 @@ export const getProviderColumns = (currentUserId?: string) => {
     },
   ];
 
-  // Add an “Actions” column if we know the current user
   if (currentUserId) {
     cols.push({
       id: "actions",
       header: "Actions",
       cell: (info) => {
         const row = info.row.original;
-        // only show “Edit” for your own row
         return row.userId === currentUserId ? (
           <EditProviderDialog provider={row} currentUser={currentUserId} />
         ) : null;
