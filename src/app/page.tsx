@@ -40,8 +40,7 @@ export default async function HomePage() {
           items={[...items]}
           currentUser={user?.id}
         />
-        <AddItemButton itemCategories={[...itemCategories]} />
-        {/* {user && } */}
+        {user && <AddItemButton itemCategories={[...itemCategories]} />}
       </div>
     </div>
   );
