@@ -32,7 +32,7 @@ export default function ProvideItemButton({
         <DialogHeader>
           <DialogTitle>Provide {itemName}</DialogTitle>
           <DialogDescription>
-            Let everyone know that you&apos;re bringing {itemName} to this trip
+            Let everyone know that you're bringing {itemName} to this trip
           </DialogDescription>
           <AddProviderForm
             itemName={itemName}

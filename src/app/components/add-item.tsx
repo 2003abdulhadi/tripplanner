@@ -23,11 +23,7 @@ export function AddItemButton({ itemCategories }: AddItemButtonProps) {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <Button
-            className="sticky self-end bottom-6 right-6 z-10 rounded-full p-3 shadow-lg"
-            style={{
-              marginLeft: "calc(var(--spacing) * -8.4)",
-              marginBottom: "calc(var(--spacing) * 2)",
-            }}
+            className="sticky self-end z-10 rounded-full p-3 shadow-lg left-0 bottom-6 ml-4 mb-1"
             aria-label="Add item"
           >
             +
